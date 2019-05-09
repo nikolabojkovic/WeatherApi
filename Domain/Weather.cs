@@ -1,7 +1,7 @@
 
 using System;
 
-namespace WeatherApi.Models {
+namespace WeatherApi.Domain {
     public class Weather {
 
         private Weather(string city,

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
+using Autofac;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -10,14 +12,19 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using WeatherApi.Core;
+using WeatherApi.Infrastructure;
 
 namespace WeatherApi
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IHostingEnvironment env)
         {
-            Configuration = configuration;
+            var builder = new ConfigurationBuilder()
+                 .SetBasePath(env.ContentRootPath)
+                 .AddJsonFile($"appsettings.json", optional: true, reloadOnChange: true);
+            Configuration = builder.Build();
         }
 
         public IConfiguration Configuration { get; }
@@ -54,6 +61,19 @@ namespace WeatherApi
             app.UseHttpsRedirection();
             app.UseCors("AllowAllOrigins");
             app.UseMvc();
+        }
+
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+            Assembly[] assemblies = {
+                Assembly.Load("WeatherApi")
+            };
+
+            builder.RegisterAssemblyTypes(assemblies)
+                   .Where(t => t.Name.EndsWith("Service"))
+                   .AsImplementedInterfaces();
+
+            builder.RegisterType<Router>().As<IRouter>().SingleInstance();  
         }
     }
 }
