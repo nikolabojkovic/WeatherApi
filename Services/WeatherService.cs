@@ -15,12 +15,12 @@ namespace WeatherApi.CustomServices {
             _router = router;
         }
 
-        public async Task<Weather> ForcastByNameOfThe(string city) {
+        public async Task<Forcast> ForcastByNameOfThe(string city) {
 
-            var apiWeatherDataString = await _router.SendRequest(HttpMethod.Get, $"data/2.5/weather?q={city}");
+            var apiWeatherDataString = await _router.SendRequest(HttpMethod.Get, $"forecast?q={city}");
             dynamic dynamicApiData = JsonConvert.DeserializeObject<dynamic>(apiWeatherDataString);
             
-            return Weather.SupplyFrom(dynamicApiData);
+            return Forcast.SuppliedFrom(dynamicApiData);
         }
     }
 }

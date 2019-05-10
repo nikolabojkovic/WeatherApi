@@ -4,6 +4,6 @@ using System.Threading.Tasks;
 namespace WeatherApi.Core {
     public interface IRouter
     {
-        Task<string> SendRequest(HttpMethod method, string @params);
+        Task<string> SendRequest(HttpMethod method, string parameters);
     }
 }

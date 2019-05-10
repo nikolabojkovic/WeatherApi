@@ -14,14 +14,14 @@ namespace WeatherApi.Infrastructure {
             _client = new HttpClient();
         }
 
-        public async Task<string> SendRequest(HttpMethod method, string @params)
+        public async Task<string> SendRequest(HttpMethod method, string parameters)
         {
             var api = _configuration.GetSection("RemoteWeatherApi")["apiUri"];
             var appId = $"&appid={_configuration.GetSection("RemoteWeatherApi")["appId"]}";
 
-            HttpRequestMessage request = new HttpRequestMessage(method, $"{api}{@params}{appId}");
+            HttpRequestMessage request = new HttpRequestMessage(method, $"{api}{parameters}{appId}");
             var response = await _client.SendAsync(request);
-            
+
             return await response.Content.ReadAsStringAsync();
         }
     }
