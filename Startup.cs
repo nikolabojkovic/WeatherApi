@@ -71,7 +71,8 @@ namespace WeatherApi
 
             builder.RegisterAssemblyTypes(assemblies)
                    .Where(t => t.Name.EndsWith("Service"))
-                   .AsImplementedInterfaces();
+                   .AsImplementedInterfaces()
+                   .InstancePerLifetimeScope();
 
             builder.RegisterType<Router>().As<IRouter>().SingleInstance();  
         }

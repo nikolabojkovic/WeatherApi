@@ -19,11 +19,16 @@ namespace WeatherApi.Controllers
             _weatherService = weatherService;
         }
 
-        [HttpGet("forcast")]
-        public async Task<ActionResult> Forcast(string city)
+        [HttpGet("forecast")]
+        public async Task<ActionResult> Forcast(string city, string code)
         {           
-            return Ok(await _weatherService.ForcastByNameOfThe(city));
-        }
+            if (!string.IsNullOrWhiteSpace(city))
+                return Ok(await _weatherService.ForcastByNameOfThe(city));
 
+            if (!string.IsNullOrWhiteSpace(code))
+                return Ok(await _weatherService.ForcastByZip(code));
+
+            return BadRequest("Parameter city or zip code is required");
+        }
     }
 }

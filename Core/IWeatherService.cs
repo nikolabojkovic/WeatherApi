@@ -5,6 +5,7 @@ namespace WeatherApi.Core {
 
     public interface IWeatherService
     {
-        Task<Forcast> ForcastByNameOfThe(string cityName);
+        Task<Forecast> ForcastByNameOfThe(string cityName);
+        Task<Forecast> ForcastByZip(string code);
     }
 }

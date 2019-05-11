@@ -1,5 +1,7 @@
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace WeatherApi.Domain {
     public class Weather {
@@ -15,7 +17,7 @@ namespace WeatherApi.Domain {
             Temperature = temperature;
             Humidity = humidity;
             WindSpeed = windSpeed;
-            DateTime = dateTime;
+            AtDateTime = dateTime;
         }
 
         private Weather() {}
@@ -25,7 +27,24 @@ namespace WeatherApi.Domain {
         public decimal Temperature { get; private set; }
         public int Humidity { get; private set; }
         public decimal WindSpeed { get; private set; }
-        public DateTime DateTime { get; private set; }
+
+        internal static Weather CreateFrom(IEnumerable<Weather> segments)
+        {
+            var averageTemp = segments.Aggregate(decimal.Zero, (acc, x) => acc + x.Temperature) / segments.Count();
+            var avarageHumidity = segments.Aggregate(decimal.Zero, (acc, x) => acc + x.Humidity) / segments.Count();
+            var avarageWindSpeed = segments.Aggregate(decimal.Zero, (acc, x) => acc + x.WindSpeed) / segments.Count();
+
+            return new Weather() {
+                Condition = segments.First().Condition,                
+                Description = segments.First().Description,
+                Temperature = averageTemp,
+                Humidity = Convert.ToInt32(avarageHumidity),
+                WindSpeed = avarageWindSpeed,
+                AtDateTime = segments.First().AtDateTime
+            };
+        }
+
+        public DateTime AtDateTime { get; private set; }
 
 
         public static Weather SuppliedFrom(dynamic apiWeatherData) {
