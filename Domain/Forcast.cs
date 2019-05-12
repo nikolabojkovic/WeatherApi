@@ -1,5 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using WeatherApi.Exceptions;
 
 namespace WeatherApi.Domain {
     public class Forecast {
@@ -7,34 +10,25 @@ namespace WeatherApi.Domain {
         public List<Weather> Days { get; private set; }
         public string City { get; private set; }
 
-        public string Error { get; private set; }
-        public bool HasError { get; set; }
-
         private Forecast(string city, List<Weather> days) {
             Days = days;
             City = city;
         }
 
-        private Forecast(string withError) {
-            Error = withError;
-            HasError = true;
-        }
-
-        public static Forecast WithError(string error) {
-            return new Forecast(error);
-        }
-
         public static Forecast SuppliedFrom(dynamic apiWeatherData) {
+            if (apiWeatherData?.cod != null && Convert.ToInt32(apiWeatherData?.cod.Value) != 200)
+                throw new ApiException("No data", HttpStatusCode.BadRequest);
+
             var segments = new List<Weather>();
             var days = new List<Weather>();
             var segmentsPerDay = 8;
             var city = apiWeatherData?.city?.name.Value.ToString();
 
             if (apiWeatherData?.list == null)
-                return Forecast.WithError("Service is not available at the moment");
+                throw new ApiException("No data", HttpStatusCode.BadRequest);
 
-            foreach(var segment in apiWeatherData?.list) {
-                segments.Add(Weather.SuppliedFrom(segment));
+            foreach(var dynamicSegment in apiWeatherData?.list) {
+                segments.Add(Weather.SuppliedFrom(dynamicSegment));
             }
 
             var numberOfDays = segments.Count / segmentsPerDay;

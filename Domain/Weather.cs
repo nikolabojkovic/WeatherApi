@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using WeatherApi.Exceptions;
 
 namespace WeatherApi.Domain {
     public class Weather {
@@ -42,7 +44,7 @@ namespace WeatherApi.Domain {
                 Condition = segments.First().Condition,                
                 Description = segments.First().Description,
                 // take day icon
-                Icon = segments.Skip(2).First().Icon,
+                Icon = segments.First().Icon,
                 Temperature = averageTemp,
                 Humidity = Convert.ToInt32(avarageHumidity),
                 WindSpeed = avarageWindSpeed,
@@ -51,6 +53,9 @@ namespace WeatherApi.Domain {
         }
 
         public static Weather SuppliedFrom(dynamic apiWeatherData) {
+            if (apiWeatherData?.cod != null && Convert.ToInt32(apiWeatherData?.cod.Value) != 200)
+                throw new ApiException("No data", HttpStatusCode.BadRequest);
+
             var tempNode = apiWeatherData?.main?.temp;
             var humidityNode = apiWeatherData?.main?.humidity;
             var windSpeedNode = apiWeatherData?.wind?.speed;

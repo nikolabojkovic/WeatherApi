@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WeatherApi.Core;
+using WeatherApi.Filters;
 using WeatherApi.Infrastructure;
 
 namespace WeatherApi
@@ -42,7 +43,7 @@ namespace WeatherApi
                                .AllowCredentials();
                     });
             });
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc(opt => opt.Filters.Add(new ExceptionToJsonFilter())).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

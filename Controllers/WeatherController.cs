@@ -23,10 +23,10 @@ namespace WeatherApi.Controllers
         public async Task<ActionResult> Forcast(string city, string zipCode)
         {           
             if (!string.IsNullOrWhiteSpace(city))
-                return Ok(await _weatherService.ForcastByNameOfThe(city));
+                return Ok(await _weatherService.ForcastByCity(city));
 
             if (!string.IsNullOrWhiteSpace(zipCode))
-                return Ok(await _weatherService.ForcastByZip(zipCode));
+                return Ok(await _weatherService.ForcastByZipCode(zipCode));
 
             return BadRequest("Parameter city or zip code is required");
         }
@@ -35,7 +35,7 @@ namespace WeatherApi.Controllers
         public async Task<ActionResult> Weather(string city, string zipCode)
         {           
             if (!string.IsNullOrWhiteSpace(city))
-                return Ok(await _weatherService.WeatherByNameOfThe(city));
+                return Ok(await _weatherService.WeatherByCity(city));
 
             if (!string.IsNullOrWhiteSpace(zipCode))
                 return Ok(await _weatherService.WeatherByZipCode(zipCode));
