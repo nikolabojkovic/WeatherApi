@@ -8,12 +8,14 @@ namespace WeatherApi.Domain {
 
         private Weather(string condition, 
                         string description, 
+                        string icon,
                         decimal temperature, 
                         int humidity, 
                         decimal windSpeed,
                         DateTime dateTime) {
             Condition = condition;
             Description = description;
+            Icon = icon;
             Temperature = temperature;
             Humidity = humidity;
             WindSpeed = windSpeed;
@@ -27,6 +29,8 @@ namespace WeatherApi.Domain {
         public decimal Temperature { get; private set; }
         public int Humidity { get; private set; }
         public decimal WindSpeed { get; private set; }
+        public string Icon { get; set; }
+        public DateTime AtDateTime { get; private set; }
 
         internal static Weather CreateFrom(IEnumerable<Weather> segments)
         {
@@ -37,15 +41,14 @@ namespace WeatherApi.Domain {
             return new Weather() {
                 Condition = segments.First().Condition,                
                 Description = segments.First().Description,
+                // take day icon
+                Icon = segments.Skip(2).First().Icon,
                 Temperature = averageTemp,
                 Humidity = Convert.ToInt32(avarageHumidity),
                 WindSpeed = avarageWindSpeed,
                 AtDateTime = segments.First().AtDateTime
             };
         }
-
-        public DateTime AtDateTime { get; private set; }
-
 
         public static Weather SuppliedFrom(dynamic apiWeatherData) {
             var tempNode = apiWeatherData?.main?.temp;
@@ -57,6 +60,7 @@ namespace WeatherApi.Domain {
 
             return new Weather(weatherNode != null ? weatherNode.main?.Value.ToString() : string.Empty, 
                                weatherNode != null ? weatherNode.description?.Value.ToString() : string.Empty,
+                               weatherNode != null ? weatherNode.icon?.Value.ToString() : string.Empty,
                                tempNode != null ? Convert.ToDecimal(tempNode.Value) : 0,
                                humidityNode != null ? Convert.ToInt32(humidityNode.Value) : 0,
                                windSpeedNode != null ? Convert.ToDecimal(windSpeedNode.Value) : 0,

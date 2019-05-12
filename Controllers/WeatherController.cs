@@ -30,5 +30,17 @@ namespace WeatherApi.Controllers
 
             return BadRequest("Parameter city or zip code is required");
         }
+
+        [HttpGet("current")]
+        public async Task<ActionResult> Weather(string city, string code)
+        {           
+            if (!string.IsNullOrWhiteSpace(city))
+                return Ok(await _weatherService.WeatherByNameOfThe(city));
+
+            if (!string.IsNullOrWhiteSpace(code))
+                return Ok(await _weatherService.WeatherByZip(code));
+
+            return BadRequest("Parameter city or zip code is required");
+        }
     }
 }
