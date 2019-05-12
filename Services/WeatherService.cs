@@ -1428,7 +1428,7 @@ namespace WeatherApi.CustomServices {
             return Weather.SuppliedFrom(dynamicApiData);
         }
 
-        public async Task<Weather> WeatherByZip(string code)
+        public async Task<Weather> WeatherByZipCode(string code)
         {
              var apiWeatherDataString = await _router.SendRequest(HttpMethod.Get, $"weather?zip={code}&units={Units}");
             dynamic dynamicApiData = JsonConvert.DeserializeObject<dynamic>(apiWeatherDataString);
