@@ -8,13 +8,15 @@ using WeatherApi.Exceptions;
 namespace WeatherApi.Domain {
     public class Weather {
 
-        private Weather(string condition, 
+        private Weather(string cityName, 
+                        string condition,
                         string description, 
                         string icon,
                         decimal temperature, 
                         int humidity, 
                         decimal windSpeed,
                         DateTime dateTime) {
+            CityName = cityName;
             Condition = condition;
             Description = description;
             Icon = icon;
@@ -26,12 +28,13 @@ namespace WeatherApi.Domain {
 
         private Weather() {}
 
+        public string CityName { get; private set; }
         public string Condition { get; private set; }
         public string Description { get; private set; }
         public decimal Temperature { get; private set; }
         public int Humidity { get; private set; }
         public decimal WindSpeed { get; private set; }
-        public string Icon { get; set; }
+        public string Icon { get; private set; }
         public DateTime AtDateTime { get; private set; }
 
         internal static Weather CreateFrom(IEnumerable<Weather> segments)
@@ -43,7 +46,6 @@ namespace WeatherApi.Domain {
             return new Weather() {
                 Condition = segments.First().Condition,                
                 Description = segments.First().Description,
-                // take day icon
                 Icon = segments.First().Icon,
                 Temperature = averageTemp,
                 Humidity = Convert.ToInt32(avarageHumidity),
@@ -59,11 +61,11 @@ namespace WeatherApi.Domain {
             var tempNode = apiWeatherData?.main?.temp;
             var humidityNode = apiWeatherData?.main?.humidity;
             var windSpeedNode = apiWeatherData?.wind?.speed;
-
             var weatherNode = apiWeatherData?.weather != null && apiWeatherData?.weather?.Count > 0 
                             ? apiWeatherData?.weather[0] : null;
 
-            return new Weather(weatherNode != null ? weatherNode.main?.Value.ToString() : string.Empty, 
+            return new Weather(apiWeatherData.name != null ? apiWeatherData.name.Value.ToString() : string.Empty,
+                               weatherNode != null ? weatherNode.main?.Value.ToString() : string.Empty, 
                                weatherNode != null ? weatherNode.description?.Value.ToString() : string.Empty,
                                weatherNode != null ? weatherNode.icon?.Value.ToString() : string.Empty,
                                tempNode != null ? Convert.ToDecimal(tempNode.Value) : 0,

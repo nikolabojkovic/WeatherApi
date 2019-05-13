@@ -28,7 +28,7 @@ namespace WeatherApi.Controllers
             if (!string.IsNullOrWhiteSpace(zipCode))
                 return Ok(await _weatherService.ForcastByZipCode(zipCode));
 
-            return BadRequest("Parameter city or zip code is required");
+            return BadRequest("Parameter city or zip code is missing");
         }
 
         [HttpGet("current")]
@@ -40,7 +40,7 @@ namespace WeatherApi.Controllers
             if (!string.IsNullOrWhiteSpace(zipCode))
                 return Ok(await _weatherService.WeatherByZipCode(zipCode));
 
-            return BadRequest("Parameter city or zip code is required");
+            return BadRequest("Parameter city or zip code is missing");
         }
     }
 }

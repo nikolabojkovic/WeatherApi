@@ -19,13 +19,13 @@ namespace WeatherApi.Domain {
             if (apiWeatherData?.cod != null && Convert.ToInt32(apiWeatherData?.cod.Value) != 200)
                 throw new ApiException("No data", HttpStatusCode.BadRequest);
 
+            if (apiWeatherData?.list == null)
+                throw new ApiException("No data", HttpStatusCode.BadRequest);
+
             var segments = new List<Weather>();
             var days = new List<Weather>();
             var segmentsPerDay = 8;
-            var city = apiWeatherData?.city?.name.Value.ToString();
-
-            if (apiWeatherData?.list == null)
-                throw new ApiException("No data", HttpStatusCode.BadRequest);
+            var city = apiWeatherData?.city?.name.Value.ToString();            
 
             foreach(var dynamicSegment in apiWeatherData?.list) {
                 segments.Add(Weather.SuppliedFrom(dynamicSegment));
