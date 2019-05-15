@@ -24,17 +24,14 @@ namespace WeatherApi.Domain {
 
             var segments = new List<Weather>();
             var days = new List<Weather>();
-            var segmentsPerDay = 8;
             var city = apiWeatherData?.city?.name.Value.ToString();            
 
             foreach(var dynamicSegment in apiWeatherData?.list) {
                 segments.Add(Weather.SuppliedFrom(dynamicSegment));
-            }
+            }          
 
-            var numberOfDays = segments.Count / segmentsPerDay;
-
-            for(int i = 0; i < numberOfDays; i++) {
-                days.Add(Weather.CreateFrom(segments.Skip((i * segmentsPerDay) - 1).Take(segmentsPerDay)));
+            foreach(var group in segments.GroupBy(x => x.AtDateTime.ToShortDateString())) {
+                days.Add(Weather.CreateFrom(segments.Where(x => x.AtDateTime.ToShortDateString() == group.Key)));
             }
 
             return new Forecast(city, days);
