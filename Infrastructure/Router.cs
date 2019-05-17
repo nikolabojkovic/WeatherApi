@@ -14,6 +14,14 @@ namespace WeatherApi.Infrastructure {
             _client = new HttpClient();
         }
 
+        public async Task<string> SendKeepAliveRequest()
+        {
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, _configuration.GetSection("KeepAlive")["hostTargetUrl"]);
+            var response = await _client.SendAsync(request);
+
+            return await response.Content.ReadAsStringAsync();
+        }
+
         public async Task<string> SendRequest(HttpMethod method, string parameters)
         {
             var api = _configuration.GetSection("RemoteWeatherApi")["apiUri"];

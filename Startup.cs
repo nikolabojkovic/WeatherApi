@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using Microsoft.AspNetCore.Builder;
@@ -15,6 +17,8 @@ using Microsoft.Extensions.Options;
 using WeatherApi.Core;
 using WeatherApi.Filters;
 using WeatherApi.Infrastructure;
+using WeatherApi.MIddleweres;
+using WeatherApi.Tasks;
 
 namespace WeatherApi
 {
@@ -24,7 +28,7 @@ namespace WeatherApi
         {
             var builder = new ConfigurationBuilder()
                  .SetBasePath(env.ContentRootPath)
-                 .AddJsonFile($"appsettings.json", optional: true, reloadOnChange: true);
+                 .AddJsonFile($"appsettings.json", optional: false, reloadOnChange: true);
             Configuration = builder.Build();
         }
 
@@ -59,9 +63,11 @@ namespace WeatherApi
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
             app.UseCors("AllowAllOrigins");
+            app.UseHttpsRedirection();
             app.UseMvc();
+            app.UseMiddleware<KeepAliveMiddleware>();
+            app.ApplicationServices.GetService<IKeepAliveTask>().Run(); 
         }
 
         public void ConfigureContainer(ContainerBuilder builder)
@@ -75,7 +81,8 @@ namespace WeatherApi
                    .AsImplementedInterfaces()
                    .InstancePerLifetimeScope();
 
-            builder.RegisterType<Router>().As<IRouter>().SingleInstance();  
+            builder.RegisterType<Router>().As<IRouter>().SingleInstance();
+            builder.RegisterType<KeepAliveTask>().As<IKeepAliveTask>().InstancePerLifetimeScope();   
         }
     }
 }
