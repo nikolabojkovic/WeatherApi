@@ -1,10 +1,12 @@
 
+using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using WeatherApi.Core;
 using WeatherApi.Domain;
+using WeatherApi.DTO;
 
 namespace WeatherApi.CustomServices {
     public class WeatherService : IWeatherService {
@@ -19,33 +21,33 @@ namespace WeatherApi.CustomServices {
         public async Task<Forecast> ForcastByCity(string city) {
 
             var apiWeatherDataString = await _router.SendRequest(HttpMethod.Get, $"forecast?q={city}&units={Units}");
-            dynamic dynamicApiData = JsonConvert.DeserializeObject<dynamic>(apiWeatherDataString);
+            ForecastContainerDTO weatherApiData = JsonConvert.DeserializeObject<ForecastContainerDTO>(apiWeatherDataString);
 
-            return Forecast.SuppliedFrom(dynamicApiData);
+            return Forecast.SuppliedFrom(weatherApiData);
         }
 
         public async Task<Forecast> ForcastByZipCode(string code)
         {
             var apiWeatherDataString = await _router.SendRequest(HttpMethod.Get, $"forecast?zip={code}&units={Units}");
-            dynamic dynamicApiData = JsonConvert.DeserializeObject<dynamic>(apiWeatherDataString);
+            ForecastContainerDTO weatherApiData = JsonConvert.DeserializeObject<ForecastContainerDTO>(apiWeatherDataString);
             
-            return Forecast.SuppliedFrom(dynamicApiData);
+            return Forecast.SuppliedFrom(weatherApiData);
         }
 
         public async Task<Weather> WeatherByCity(string city)
         {
             var apiWeatherDataString = await _router.SendRequest(HttpMethod.Get, $"weather?q={city}&units={Units}");
-            dynamic dynamicApiData = JsonConvert.DeserializeObject<dynamic>(apiWeatherDataString);
+            WeatherContainerDTO weatherApiData = JsonConvert.DeserializeObject<WeatherContainerDTO>(apiWeatherDataString);
 
-            return Weather.SuppliedFrom(dynamicApiData);
+            return Weather.SuppliedFrom(weatherApiData);
         }
 
         public async Task<Weather> WeatherByZipCode(string code)
         {
              var apiWeatherDataString = await _router.SendRequest(HttpMethod.Get, $"weather?zip={code}&units={Units}");
-            dynamic dynamicApiData = JsonConvert.DeserializeObject<dynamic>(apiWeatherDataString);
+            WeatherContainerDTO weatherApiData = JsonConvert.DeserializeObject<WeatherContainerDTO>(apiWeatherDataString);
             
-            return Weather.SuppliedFrom(dynamicApiData);
+            return Weather.SuppliedFrom(weatherApiData);
         }
     }
 }

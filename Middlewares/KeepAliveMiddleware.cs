@@ -15,9 +15,7 @@ namespace WeatherApi.MIddleweres
         public async Task Invoke(HttpContext httpContext)
         {
             if (httpContext.Request.Path.ToString().Equals("/keepAlive"))
-            {
                 return;
-            }
 
             await _next.Invoke(httpContext);
         }

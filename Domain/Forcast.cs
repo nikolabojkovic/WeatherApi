@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using WeatherApi.DTO;
 using WeatherApi.Exceptions;
 
 namespace WeatherApi.Domain {
@@ -15,23 +16,23 @@ namespace WeatherApi.Domain {
             City = city;
         }
 
-        public static Forecast SuppliedFrom(dynamic apiWeatherData) {
-            if (apiWeatherData?.cod != null && Convert.ToInt32(apiWeatherData?.cod.Value) != 200)
+        public static Forecast SuppliedFrom(ForecastContainerDTO apiForecastData) {
+            if (apiForecastData.Cod != 200)
                 throw new ApiException("No data", HttpStatusCode.BadRequest);
 
-            if (apiWeatherData?.list == null)
+            if (!apiForecastData.List.Any())
                 throw new ApiException("No data", HttpStatusCode.BadRequest);
 
-            var segments = new List<Weather>();
+            var forecastSegments = new List<Weather>();
             var days = new List<Weather>();
-            var city = apiWeatherData?.city?.name.Value.ToString();            
+            var city = apiForecastData.City?.Name;            
 
-            foreach(var dynamicSegment in apiWeatherData?.list) {
-                segments.Add(Weather.SuppliedFrom(dynamicSegment));
+            foreach(var apiDataSegment in apiForecastData.List) {
+                forecastSegments.Add(Weather.SuppliedFrom(apiDataSegment));
             }          
 
-            foreach(var group in segments.GroupBy(x => x.AtDateTime.ToShortDateString())) {
-                days.Add(Weather.CreateFrom(segments.Where(x => x.AtDateTime.ToShortDateString() == group.Key)));
+            foreach(var group in forecastSegments.GroupBy(x => x.AtDateTime.ToShortDateString())) {
+                days.Add(Weather.CreateFrom(forecastSegments.Where(x => x.AtDateTime.ToShortDateString() == group.Key)));
             }
 
             return new Forecast(city, days);

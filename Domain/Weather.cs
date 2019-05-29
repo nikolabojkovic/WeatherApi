@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using WeatherApi.DTO;
 using WeatherApi.Exceptions;
 
 namespace WeatherApi.Domain {
@@ -39,39 +40,38 @@ namespace WeatherApi.Domain {
 
         internal static Weather CreateFrom(IEnumerable<Weather> segments)
         {
-            var averageTemp = segments.Aggregate(decimal.Zero, (acc, x) => acc + x.Temperature) / segments.Count();
-            var avarageHumidity = segments.Aggregate(decimal.Zero, (acc, x) => acc + x.Humidity) / segments.Count();
+            var averageTemp =      segments.Aggregate(decimal.Zero, (acc, x) => acc + x.Temperature) / segments.Count();
+            var avarageHumidity =  segments.Aggregate(decimal.Zero, (acc, x) => acc + x.Humidity) / segments.Count();
             var avarageWindSpeed = segments.Aggregate(decimal.Zero, (acc, x) => acc + x.WindSpeed) / segments.Count();
 
             return new Weather() {
-                Condition = segments.First().Condition,                
+                Condition =   segments.First().Condition,                
                 Description = segments.First().Description,
-                Icon = segments.First().Icon,
+                Icon =        segments.First().Icon.Replace("n", "d"),
                 Temperature = averageTemp,
-                Humidity = Convert.ToInt32(avarageHumidity),
-                WindSpeed = avarageWindSpeed,
-                AtDateTime = segments.First().AtDateTime
+                Humidity =    Convert.ToInt32(avarageHumidity),
+                WindSpeed =   avarageWindSpeed,
+                AtDateTime =  segments.First().AtDateTime
             };
         }
 
-        public static Weather SuppliedFrom(dynamic apiWeatherData) {
-            if (apiWeatherData?.cod != null && Convert.ToInt32(apiWeatherData?.cod.Value) != 200)
+        public static Weather SuppliedFrom(WeatherContainerDTO apiWeatherData) {
+            if (apiWeatherData.Cod != 0 && apiWeatherData.Cod != 200)
                 throw new ApiException("No data", HttpStatusCode.BadRequest);
 
-            var tempNode = apiWeatherData?.main?.temp;
-            var humidityNode = apiWeatherData?.main?.humidity;
-            var windSpeedNode = apiWeatherData?.wind?.speed;
-            var weatherNode = apiWeatherData?.weather != null && apiWeatherData?.weather?.Count > 0 
-                            ? apiWeatherData?.weather[0] : null;
+            var temp =      apiWeatherData.Main?.Temp;
+            var humidity =  apiWeatherData.Main?.Humidity;
+            var windSpeed = apiWeatherData.Wind?.Speed;
+            var weather =   apiWeatherData.Weather.Any() ? apiWeatherData.Weather[0] : null;
 
-            return new Weather(apiWeatherData.name != null ? apiWeatherData.name.Value.ToString() : string.Empty,
-                               weatherNode != null ? weatherNode.main?.Value.ToString() : string.Empty, 
-                               weatherNode != null ? weatherNode.description?.Value.ToString() : string.Empty,
-                               weatherNode != null ? weatherNode.icon?.Value.ToString() : string.Empty,
-                               tempNode != null ? Convert.ToDecimal(tempNode.Value) : 0,
-                               humidityNode != null ? Convert.ToInt32(humidityNode.Value) : 0,
-                               windSpeedNode != null ? Convert.ToDecimal(windSpeedNode.Value) : 0,
-                               Convert.ToDateTime(apiWeatherData.dt_txt));
+            return new Weather(apiWeatherData.Name != null ? apiWeatherData.Name : string.Empty,
+                               weather != null             ? weather.Main : string.Empty, 
+                               weather != null             ? weather.Description : string.Empty,
+                               weather != null             ? weather.Icon : string.Empty,
+                               temp != null                ? Convert.ToDecimal(temp.Value) : 0,
+                               humidity != null            ? Convert.ToInt32(humidity.Value) : 0,
+                               windSpeed != null           ? Convert.ToDecimal(windSpeed.Value) : 0,
+                               Convert.ToDateTime(apiWeatherData.Dt_txt));
         }
     }
 }
