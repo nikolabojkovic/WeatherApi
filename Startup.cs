@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -47,7 +48,9 @@ namespace WeatherApi
                                .AllowCredentials();
                     });
             });
-            services.AddMvc(opt => opt.Filters.Add(new ExceptionToJsonFilter())).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddMvc(opt => opt.Filters.Add(new ExceptionToJsonFilter(services.BuildServiceProvider().GetService<ILogger<ExceptionToJsonFilter>>())))
+                    .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -62,6 +65,8 @@ namespace WeatherApi
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            Mapper.Initialize(cfg => cfg.AddMaps(AppDomain.CurrentDomain.GetAssemblies()));
 
             app.UseCors("AllowAllOrigins");
             app.UseHttpsRedirection();

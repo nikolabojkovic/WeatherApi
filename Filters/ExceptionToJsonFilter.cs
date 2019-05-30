@@ -10,6 +10,13 @@ namespace WeatherApi.Filters
 {
     public class ExceptionToJsonFilter : ExceptionFilterAttribute
     {
+        private readonly ILogger<ExceptionToJsonFilter> _logger;
+
+        public ExceptionToJsonFilter(ILogger<ExceptionToJsonFilter> logger)
+        {
+            _logger = logger;
+        }
+
         private int _statusCode;
         
         public override void OnException(ExceptionContext context)
@@ -19,11 +26,13 @@ namespace WeatherApi.Filters
             else 
                 _statusCode = (int) HttpStatusCode.InternalServerError;
                 
-             var jsonResult = new JsonResult(Value(context))
-                {
-                    StatusCode = _statusCode
-                };
-                context.Result = jsonResult;
+            var jsonResult = new JsonResult(Value(context))
+            {
+                StatusCode = _statusCode
+            };
+
+            context.Result = jsonResult;
+            _logger.LogError(context.Exception, context.Exception.Message);
         }
 
         private object Value(ExceptionContext context)

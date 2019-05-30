@@ -1,13 +1,14 @@
 using System.Threading.Tasks;
 using WeatherApi.Domain;
+using WeatherApi.ViewModels;
 
 namespace WeatherApi.Core {
 
     public interface IWeatherService
     {
-        Task<Weather> WeatherByCity(string cityName);
-        Task<Weather> WeatherByZipCode(string code);
-        Task<Forecast> ForcastByCity(string cityName);
-        Task<Forecast> ForcastByZipCode(string code);
+        Task<WeatherViewModel> WeatherByCity(string cityName);
+        Task<WeatherViewModel> WeatherByZipCode(string code);
+        Task<ForecastViewModel> ForcastByCity(string cityName);
+        Task<ForecastViewModel> ForcastByZipCode(string code);
     }
 }
