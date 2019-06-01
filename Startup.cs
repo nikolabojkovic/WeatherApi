@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using AutoMapper;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -29,7 +30,8 @@ namespace WeatherApi
         {
             var builder = new ConfigurationBuilder()
                  .SetBasePath(env.ContentRootPath)
-                 .AddJsonFile($"appsettings.json", optional: false, reloadOnChange: true);
+                 .AddJsonFile($"appsettings.json", optional: false, reloadOnChange: true)
+                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
             Configuration = builder.Build();
         }
 
@@ -48,6 +50,7 @@ namespace WeatherApi
                                .AllowCredentials();
                     });
             });
+            services.AddMediatR(AppDomain.CurrentDomain.GetAssemblies());
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddMvc(opt => opt.Filters.Add(new ExceptionToJsonFilter(services.BuildServiceProvider().GetService<ILogger<ExceptionToJsonFilter>>())))
                     .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
@@ -72,7 +75,7 @@ namespace WeatherApi
             app.UseHttpsRedirection();
             app.UseMvc();
             app.UseMiddleware<KeepAliveMiddleware>();
-            app.ApplicationServices.GetService<IKeepAliveTask>().Run(); 
+            app.ApplicationServices.GetService<IKeepAliveTask>().Run(new CancellationTokenSource().Token);
         }
 
         public void ConfigureContainer(ContainerBuilder builder)

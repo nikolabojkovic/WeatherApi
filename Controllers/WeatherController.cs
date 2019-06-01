@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using WeatherApi.Core;
+using WeatherApi.CityForecast.Queries;
+using WeatherApi.ZipCodeForecast.Queries;
 
 namespace WeatherApi.Controllers
 {
@@ -13,20 +16,20 @@ namespace WeatherApi.Controllers
     [ApiController]
     public class WeatherController : ControllerBase
     {
-        private readonly IWeatherService _weatherService;
+        private readonly IMediator _mediator;
 
-        public WeatherController(IWeatherService weatherService) {
-            _weatherService = weatherService;
+        public WeatherController(IMediator mediator) {
+            _mediator = mediator;
         }
 
         [HttpGet("forecast")]
         public async Task<ActionResult> Forcast(string city, string zipCode)
         {           
             if (!string.IsNullOrWhiteSpace(city))
-                return Ok(await _weatherService.ForcastByCity(city));
+                return Ok(await _mediator.Send(new CityForecastQuery { CityName = city}));
 
             if (!string.IsNullOrWhiteSpace(zipCode))
-                return Ok(await _weatherService.ForcastByZipCode(zipCode));
+                return Ok(await _mediator.Send(new ZipCodeForecastQuery { ZipCode = zipCode}));
 
             return BadRequest("Parameter city or zip code is missing");
         }
@@ -35,10 +38,10 @@ namespace WeatherApi.Controllers
         public async Task<ActionResult> Weather(string city, string zipCode)
         {           
             if (!string.IsNullOrWhiteSpace(city))
-                return Ok(await _weatherService.WeatherByCity(city));
+                return Ok(await _mediator.Send(new CityCurrentWeatherQuery { CityName = city}));
 
             if (!string.IsNullOrWhiteSpace(zipCode))
-                return Ok(await _weatherService.WeatherByZipCode(zipCode));
+                return Ok(await _mediator.Send(new ZipCodeCurrentWeatherQuery { ZipCode = zipCode}));
 
             return BadRequest("Parameter city or zip code is missing");
         }

@@ -65,12 +65,12 @@ namespace WeatherApi.Domain {
             var weather =   apiWeatherData.Weather.Any() ? apiWeatherData.Weather[0] : null;
 
             return new Weather(apiWeatherData.Name != null ? apiWeatherData.Name : string.Empty,
-                               weather != null             ? weather.Main : string.Empty, 
-                               weather != null             ? weather.Description : string.Empty,
-                               weather != null             ? weather.Icon : string.Empty,
-                               temp != null                ? Convert.ToDecimal(temp.Value) : 0,
-                               humidity != null            ? Convert.ToInt32(humidity.Value) : 0,
-                               windSpeed != null           ? Convert.ToDecimal(windSpeed.Value) : 0,
+                                           weather != null ? weather.Main : string.Empty, 
+                                           weather != null ? weather.Description : string.Empty,
+                                           weather != null ? weather.Icon : string.Empty,
+                                              temp != null ? Convert.ToDecimal(temp.Value) : 0,
+                                          humidity != null ? Convert.ToInt32(humidity.Value) : 0,
+                                         windSpeed != null ? Convert.ToDecimal(windSpeed.Value) : 0,
                                Convert.ToDateTime(apiWeatherData.Dt_txt));
         }
     }

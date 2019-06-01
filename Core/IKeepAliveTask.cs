@@ -1,7 +1,9 @@
+using System.Threading;
+
 namespace WeatherApi.Core 
 {
     public interface IKeepAliveTask
     {
-        void Run();
+        void Run(CancellationToken ancellationToken);
     }
 }
