@@ -50,6 +50,7 @@ namespace WeatherApi
                                .AllowCredentials();
                     });
             });
+            services.AddHttpClient("openWeatherApi", http => http.BaseAddress = new Uri(Configuration.GetSection("RemoteWeatherApi")["apiUri"]));
             services.AddMediatR(AppDomain.CurrentDomain.GetAssemblies());
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddMvc(opt => opt.Filters.Add(new ExceptionToJsonFilter(services.BuildServiceProvider().GetService<ILogger<ExceptionToJsonFilter>>())))
