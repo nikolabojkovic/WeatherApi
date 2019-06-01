@@ -40,7 +40,9 @@ namespace WeatherApi.Tasks
                         _logger.LogError(ex, ex.Message);
                     }
 
-                    _logger.LogInformation($"Keep Aliave request #{counter++} sent");  
+                    _logger.LogInformation($"Keep Aliave request #{counter++} sent");
+
+                    // continue sending keep alive request after delay of {theAmountOfTimeFomSettings} minutes  
                     await Task.Delay(TimeSpan.FromMinutes(Convert.ToInt32(_configuration.GetSection("KeepAlive")["delayInMinutes"])));   
                 }                    
             }, cancellationToken);
