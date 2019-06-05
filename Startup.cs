@@ -86,12 +86,11 @@ namespace WeatherApi
             };
 
             builder.RegisterAssemblyTypes(assemblies)
-                   .Where(t => t.Name.EndsWith("Service"))
+                   .Where(t => t.Name.EndsWith("Task"))
                    .AsImplementedInterfaces()
                    .InstancePerLifetimeScope();
 
             builder.RegisterType<Router>().As<IRouter>().SingleInstance();
-            builder.RegisterType<KeepAliveTask>().As<IKeepAliveTask>().InstancePerLifetimeScope();   
         }
     }
 }
