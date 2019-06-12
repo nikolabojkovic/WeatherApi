@@ -18,7 +18,7 @@ namespace WeatherApi.Domain {
 
         public static Forecast SuppliedFrom(ForecastContainerDTO apiForecastData) {
             if (apiForecastData.Cod != 200)
-                throw new ApiException("No data", HttpStatusCode.BadRequest);
+                throw new ApiException(apiForecastData.Message, HttpStatusCode.BadRequest);
 
             if (!apiForecastData.List.Any())
                 throw new ApiException("No data", HttpStatusCode.BadRequest);

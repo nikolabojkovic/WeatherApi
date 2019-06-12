@@ -57,7 +57,7 @@ namespace WeatherApi.Domain {
 
         public static Weather SuppliedFrom(WeatherContainerDTO apiWeatherData) {
             if (apiWeatherData.Cod != 0 && apiWeatherData.Cod != 200)
-                throw new ApiException("No data", HttpStatusCode.BadRequest);
+                throw new ApiException(apiWeatherData.Message, HttpStatusCode.BadRequest);
 
             var temp =      apiWeatherData.Main?.Temp;
             var humidity =  apiWeatherData.Main?.Humidity;
